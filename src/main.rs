@@ -1,4 +1,3 @@
-use indoc::indoc;
 use std::fmt;
 
 struct Version(u8, u8, u8);
