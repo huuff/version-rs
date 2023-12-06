@@ -3,6 +3,7 @@ use std::{fmt, error};
 use std::str::FromStr;
 use regex::Regex;
 
+#[derive(Debug, Eq, PartialEq)]
 pub struct Version(pub u8, pub u8, pub u8);
 
 impl Version {
@@ -54,5 +55,22 @@ impl FromStr for Version {
             .map(|p| p.parse().unwrap());
 
         Ok(Version(major, minor, patch))
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn correctly_formats() {
+        let v = Version(0, 1, 2);
+        assert_eq!("v0.1.2", v.to_string());
+    }
+
+    #[test]
+    fn correctly_parses() {
+        let v = "v1.0.2";
+        assert_eq!(Version(1, 0, 2), v.parse().unwrap());
     }
 }
