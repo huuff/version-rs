@@ -1,4 +1,5 @@
 use indoc::indoc;
+use std::fmt;
 
 struct Version(u8, u8, u8);
 
@@ -8,12 +9,14 @@ impl Version {
     fn patch(&self) -> u8 { self.2 }
 }
 
+impl fmt::Display for Version {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "v{}.{}.{}", self.major(), self.minor(), self.patch())
+    }
+}
+
 fn main() {
     let sample = Version(0, 1, 2);
 
-    println!(indoc! {"
-        major: {}
-        minor: {}
-        patch: {}
-    "}, sample.major(), sample.minor(), sample.patch());
+    println!("version: {}", sample.to_string());
 }
