@@ -36,14 +36,11 @@ impl From<regex::Error> for ParseVersionError {
     }
 }
 
-// TODO: Handle more cases such as:
-// * optional v
-// * optional patch and minor??
 impl FromStr for Version {
     type Err = ParseVersionError;
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         // TODO: Once cell
-        let RE = Regex::new(r"v(\d+).(\d+).(\d+)")?;
+        let RE = Regex::new(r"v?(\d+).(\d+).(\d+)")?;
 
         let (_, parts) =
             RE.captures(s)
@@ -80,5 +77,11 @@ mod tests {
     fn fails_parsing() {
         let v = "v1";
         assert_eq!(Err(ParseVersionError), v.parse::<Version>())
+    }
+
+    #[test]
+    fn parses_without_v() {
+        let v = "1.0.2";
+        assert_eq!(Version(1, 0, 2), v.parse().unwrap())
     }
 }
