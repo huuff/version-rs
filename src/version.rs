@@ -1,7 +1,8 @@
 use std::fmt::Display;
+use std::num::ParseIntError;
 use std::{fmt, error};
 use std::str::FromStr;
-use regex::Regex;
+use regex::{Regex, Error};
 
 #[derive(Debug, Eq, PartialEq)]
 pub struct Version(pub u8, pub u8, pub u8);
@@ -30,31 +31,38 @@ impl Display for ParseVersionError {
 
 impl error::Error for ParseVersionError {}
 
+impl From<regex::Error> for ParseVersionError {
+    fn from(_: regex::Error) -> Self {
+       ParseVersionError 
+    }
+}
+
+impl From<ParseIntError> for ParseVersionError {
+    fn from(_: ParseIntError) -> Self {
+       ParseVersionError 
+    } 
+}
+
 // TODO: Handle more cases such as:
 // * optional v
 // * optional patch and minor??
 impl FromStr for Version {
     type Err = ParseVersionError;
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        // TODO: Cleaner error handling? Maybe implement ?
         // TODO: Once cell
-        let RE = match Regex::new(r"v(\d+).(\d+).(\d+)") {
-            Ok(it) => it,
-            Err(_) => return Err(ParseVersionError),
-        };
+        let RE = Regex::new(r"v(\d+).(\d+).(\d+)")?;
 
-        let Some((_, parts)) =
+        let (_, parts) =
             RE.captures(s)
                 .map(|caps| caps.extract()) 
-                else { return Err(ParseVersionError)}
+                .ok_or(ParseVersionError)?
                 ;
 
         // XXX: I'm unwrapping, but it should never fail since
         // the regex only captures \d+, right?
-        let [major, minor, patch] = parts
-            .map(|p| p.parse().unwrap());
+        let [major, minor, patch] = parts.map(|p| p.parse());
 
-        Ok(Version(major, minor, patch))
+        Ok(Version(major?, minor?, patch?))
     }
 }
 
