@@ -37,12 +37,6 @@ impl From<regex::Error> for ParseVersionError {
     }
 }
 
-impl From<ParseIntError> for ParseVersionError {
-    fn from(_: ParseIntError) -> Self {
-       ParseVersionError 
-    } 
-}
-
 // TODO: Handle more cases such as:
 // * optional v
 // * optional patch and minor??
@@ -60,9 +54,10 @@ impl FromStr for Version {
 
         // XXX: I'm unwrapping, but it should never fail since
         // the regex only captures \d+, right?
-        let [major, minor, patch] = parts.map(|p| p.parse());
+        let [major, minor, patch] = parts
+            .map(|p| p.parse().unwrap());
 
-        Ok(Version(major?, minor?, patch?))
+        Ok(Version(major, minor, patch))
     }
 }
 
