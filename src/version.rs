@@ -1,6 +1,7 @@
 use std::fmt::Display;
 use std::{fmt, error};
 use std::str::FromStr;
+use once_cell::sync::Lazy;
 use regex::Regex;
 
 #[derive(Debug, Eq, PartialEq)]
@@ -30,17 +31,10 @@ impl Display for ParseVersionError {
 
 impl error::Error for ParseVersionError {}
 
-impl From<regex::Error> for ParseVersionError {
-    fn from(_: regex::Error) -> Self {
-       ParseVersionError 
-    }
-}
-
 impl FromStr for Version {
     type Err = ParseVersionError;
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        // TODO: Once cell
-        let RE = Regex::new(r"v?(\d+).(\d+).(\d+)")?;
+        static RE: Lazy<Regex> = Lazy::new(|| Regex::new(r"v?(\d+).(\d+).(\d+)").unwrap());
 
         let (_, parts) =
             RE.captures(s)
