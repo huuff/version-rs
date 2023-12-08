@@ -1,8 +1,7 @@
 use std::fmt::Display;
-use std::num::ParseIntError;
 use std::{fmt, error};
 use std::str::FromStr;
-use regex::{Regex, Error};
+use regex::Regex;
 
 #[derive(Debug, Eq, PartialEq)]
 pub struct Version(pub u8, pub u8, pub u8);
@@ -75,5 +74,11 @@ mod tests {
     fn correctly_parses() {
         let v = "v1.0.2";
         assert_eq!(Version(1, 0, 2), v.parse().unwrap());
+    }
+
+    #[test]
+    fn fails_parsing() {
+        let v = "v1";
+        assert_eq!(Err(ParseVersionError), v.parse::<Version>())
     }
 }
