@@ -1,6 +1,4 @@
-mod version;
-
-use version::Version;
+use version::version::Version;
 
 fn main() {
     let sample = Version(0, 1, 2);
